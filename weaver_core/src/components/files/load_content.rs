@@ -1,16 +1,26 @@
+use crate::{components::Component, errors::ComponentError};
+
 pub struct LoadContent {
     pub file_path: String,
 }
 
-impl LoadContent {
-    pub fn execute(&self) -> Result<String, String> {
+const CODE: &str = "FILE_READ_ERROR";
+
+impl Component<String> for LoadContent {
+    fn execute(&self) -> Result<String, ComponentError> {
         println!("Loading content from {}", self.file_path);
-        std::fs::read_to_string(&self.file_path).map_err(|e| e.to_string())
+        std::fs::read_to_string(&self.file_path)
+            .map_err(|e| ComponentError::new(CODE, e.to_string()))
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::{
+        components::{files::load_content::CODE, Component},
+        errors::ComponentError,
+    };
+
     use super::LoadContent;
 
     #[test]
@@ -30,7 +40,10 @@ mod tests {
         let result = component.execute();
         assert_eq!(
             result,
-            Err("No such file or directory (os error 2)".to_string())
+            Err(ComponentError::new(
+                CODE,
+                "No such file or directory (os error 2)".to_string()
+            ))
         );
     }
 }

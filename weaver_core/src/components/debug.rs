@@ -1,11 +1,13 @@
-pub mod echo {
-    pub struct Echo {
-        pub message: String,
-    }
+use crate::errors::ComponentError;
 
-    impl Echo {
-        pub fn execute(&self) -> Result<String, String> {
-            Ok(self.message.clone())
-        }
+use super::Component;
+
+pub struct Debug {
+    pub message: String,
+}
+
+impl Component<String> for Debug {
+    fn execute(&self) -> Result<String, ComponentError> {
+        Ok(self.message.clone())
     }
 }
